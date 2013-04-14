@@ -80,8 +80,8 @@
 			if( $.byId( 'dialogSec' ) !== undefined && $.byId( 'dialogSec' ) !== null &&
 				$.byId( 'dialogMin' ) !== undefined && $.byId( 'dialogMin' ) !== null 
 			) {
-				dialogSec.innerText = sec;
-				dialogMin.innerText = min;
+				$.setText( dialogSec, sec );
+				$.setText( dialogMin, min );
 			}
 		},
 	};
@@ -163,12 +163,18 @@
 	 * set text
 	 * add eventhandler to close btn
 	 */
-	var openDialogbox = function() {
-		var callElem = arguments[0].srcElement.id; // check who's called the fn, quick n dirty ;)
+	var openDialogbox = function( event ) {
+		var callElem; // check who's called the fn, quick n dirty ;)
 		var overlay = document.createElement( 'div' );
 		var dialog = document.createElement( 'div' );
 		var dialogText = document.createElement( 'div' );
 		var closeBtn;
+		
+		if( event.srcElement != undefined ) { //chrome
+			callElem = event.srcElement.id;
+		} else { //ff
+			callElem = event.target.id;
+		}
 		
 		if( callElem == "manual" ) {
 			dialogText.innerHTML = message.manual.text;

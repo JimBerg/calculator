@@ -257,6 +257,8 @@ div.hint {
 	margin-left: 20px;
 }
 
+body:not(:-moz-handler-blocked) #display-content { line-height: 36px; } /** target ff **/
+
 #calculate-mode {
 	font-family: 'digital';
 	font-size: 14px;
@@ -597,7 +599,7 @@ div.hint {
 	float: right;
 	cursor: pointer;
 	font-size: 20px;
-	margin: -25px;
+	margin: -10px;
 	
 	-webkit-transition: color 300ms ease-in-out;
 	-moz-transition: color 300ms ease-in-out;

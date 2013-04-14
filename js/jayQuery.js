@@ -53,6 +53,7 @@ var jayQuery = {
 	* @param string fn, function to call on event
 	* ---------------------------------------------------------------------------------*/
 	addEvent: function( action, elem, fn ) {
+
 		if( window.addEventListener && window.addEventListener !== 'undefined' ) {
             elem.addEventListener( action, fn, false );  
         } else if( document.attachEvent ) {
@@ -92,7 +93,9 @@ var jayQuery = {
 	},
 	
 	getText: function( node ) {
-		if( document.getElementsByTagName( 'body' )[0].innerText === 'undefined' ) {
+		if( document.getElementsByTagName( 'body' )[0].innerText === 'undefined' ||
+			document.getElementsByTagName( 'body' )[0].innerText === undefined
+		) {
 			return node.textContent; //FF
 		} else {
 			return node.innerText; //Chrome, IE
@@ -100,7 +103,9 @@ var jayQuery = {
 	},
 	
 	setText: function( node, content ) {
-		if( document.getElementsByTagName( 'body' )[0].innerText === 'undefined' ) {
+		if( document.getElementsByTagName( 'body' )[0].innerText === 'undefined' || 
+		 	document.getElementsByTagName( 'body' )[0].innerText === undefined
+		) {
 			return node.textContent = content; //FF
 		} else {
 			return node.innerText = content; //Chrome, IE
