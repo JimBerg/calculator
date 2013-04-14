@@ -1,0 +1,636 @@
+/** --------------------------------------------------------- 
+* 
+* Modul 133
+* Taschenrechner
+* Janina Imberg
+* 
+* ----------------------------------------------------------*/
+
+
+/** --------------------------------------------------------- 
+* Load custom font for display text
+* ----------------------------------------------------------*/
+@font-face {
+    font-family: 'digital';
+    src: url('../fonts/digital.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/** --------------------------------------------------------- 
+* General styles and resets
+* ----------------------------------------------------------*/
+* { 
+    margin: 0; 
+    padding: 0; 
+}
+
+html,
+body { 
+	margin: 0; 
+	padding: 0; 
+	height: 100%;
+}
+
+body {
+	font: 12px/16px Arial, Helvetica, sans-serif;
+	color: #333;
+	background: url('../images/bknd.jpg') repeat;
+	overflow: hidden;
+}
+
+body.init *,
+body.init > * {
+	-webkit-transition: none !important;
+	-moz-transition: none;
+	-ms-transition: none;
+	-o-transition: none;
+	transition: none;
+}
+
+:focus {
+	outline: 0px solid transparent;
+}
+
+::-moz-selection {
+    background: transparent;
+    text-shadow: none;
+}
+
+::selection {
+    background: transparent;
+    text-shadow: none;
+}
+
+img {
+    vertical-align: middle;
+}
+
+img a {
+	border: 0;
+}
+
+hr {
+	display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #888;
+    margin: 5px 0;
+    padding: 0;
+}
+
+a,
+a:link,
+a:active,
+a:visited,
+a:hover {
+	text-decoration: none;
+}
+
+ul,
+ul li {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+
+/** --------------------------------------------------------- 
+* Typographic presets
+* ----------------------------------------------------------*/
+p {}
+h1 {}
+h2 {}
+h3 {}
+h4 {}
+h5 {}
+h6 {}
+
+sup { font-size: 12px; }
+
+/** --------------------------------------------------------- 
+* Layout container
+* ----------------------------------------------------------*/
+#main-container {
+	position: relative; 
+	min-height: 100%;
+	margin: 0 auto; 
+	width: 100%;
+	overflow-y: hidden;
+}
+
+/** --------------------------------------------------------- 
+* notice
+* ----------------------------------------------------------*/
+div.overlay { 
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	left: 0;
+	z-index: 999;
+	background: #000;
+	filter: progid:DXImageTransform.Microsoft.Alpha( Opacity=80 );
+	filter: alpha( opacity=80 );
+	opacity: 0.8;
+}
+
+div.hint {
+	position: absolute;
+	top: 0;
+	margin-top: 100px;
+	width: 300px;
+	height: 95px;
+	z-index: 1000;
+	background: #eee;
+	left: 50%;
+	margin-left: -200px;
+	box-shadow: 0 0 10px #000;
+	border-radius: 8px;
+	
+	color: #333;
+	padding: 50px;
+	text-align: center;
+	font-size: 24px;
+	line-height: 32px;
+	text-transform: uppercase;
+}
+
+/** --------------------------------------------------------- 
+* Calculator
+* ----------------------------------------------------------*/
+#calculator {
+	position: relative; 
+	margin: 60px auto 0;
+	width: 212px;
+	height: 420px;
+	padding: 0 16px 0 20px;
+
+	background: rgb(244,240,230); /* Old browsers */
+	background: -moz-linear-gradient(left,  rgba(244,240,230,1) 0%, rgba(247,244,239,1) 50%, rgba(244,240,230,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(244,240,230,1)), color-stop(50%,rgba(247,244,239,1)), color-stop(100%,rgba(244,240,230,1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(left,  rgba(244,240,230,1) 0%,rgba(247,244,239,1) 50%,rgba(244,240,230,1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(left,  rgba(244,240,230,1) 0%,rgba(247,244,239,1) 50%,rgba(244,240,230,1) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(left,  rgba(244,240,230,1) 0%,rgba(247,244,239,1) 50%,rgba(244,240,230,1) 100%); /* IE10+ */
+	background: linear-gradient(to right,  rgba(244,240,230,1) 0%,rgba(247,244,239,1) 50%,rgba(244,240,230,1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f4f0e6', endColorstr='#f4f0e6',GradientType=1 ); /* IE6-9 */
+
+	border-radius: 8px;
+
+	box-shadow: 
+		inset 0px 1px 0px #e5e3dc,
+		inset 0px -6px 2px #d7d2c6,
+		inset 0px 0px 25px #d7d2c6,
+		inset 0px -7px 0px #e5e3dc,
+		inset -2px 0px 3px #b7b0a1,
+		inset 2px 0px 3px #b7b0a1,
+		inset 4px 0px 0px #fff,
+		inset -4px 0px 0px #fff,
+		inset 0px 0px 2px #b7b0a1,
+		
+		0 -1px 0px #c9c4af,
+		0 1px 0px #bfb8aa,
+		1px 0px 0px #c9c4af,
+		-1px 0px 0px #c9c4af,
+		0 5px 18px #427384;
+}
+
+.label {
+	text-transform: uppercase;
+	font-size: 9px;
+	color: #6f5d53;
+	text-shadow: 0 1px 0 #fff;
+	margin: 8px 6px 2px 0;
+	float: right;
+}
+
+#display {
+	width: 192px;
+	padding: 0 7px;
+	height: 40px;
+	margin: 0 0 12px 0;
+	border-bottom: 1px solid #dcd9d1;
+
+	border-radius: 2px;
+
+	box-shadow: 
+		 0 -1px 0 #fcfbf9, 
+		 0 1px 0 #fcfbf9, 
+		 inset 0 -1px 15px #3F615F, 
+		 inset 0 0 65px #a1b3b2,
+		 inset 0 -1px 0 #647372;
+
+	background: #A2C4C2;	
+	float: left;
+	text-align: right;
+}
+
+#display.evil {
+	box-shadow: inset 0 0 10px black;
+	background: #D6702B;
+}
+
+#display.evil > * {
+	color: #fff;
+	text-shadow: none;
+}
+
+#display.evil,
+#display.evil > * {
+	-webkit-transition: all 600ms ease-in-out;
+	-moz-transition: all 600ms ease-in-out;
+	-ms-transition: all 600ms ease-in-out;
+	-o-transition: all 600ms ease-in-out;
+	transition: all 600ms ease-in-out;
+}
+
+#display-content {
+	font-family: 'digital';
+	font-size: 24px;
+	line-height: 44px;
+	text-align: right;
+	color: #333;
+	text-shadow: 0 0px 3px #A1C4C4;
+	overflow: hidden;
+	width: 174px;
+	display: block;
+	margin-left: 20px;
+}
+
+#calculate-mode {
+	font-family: 'digital';
+	font-size: 14px;
+	position: absolute;
+	z-index: 10;
+	margin: 4px 0 0 0;
+	text-align: left;
+	display: block;
+}
+
+/** --------------------------------------------------------- 
+* Button Container
+* ----------------------------------------------------------*/
+#basic-operators {
+}
+
+#special-operators {
+	height: 206px;
+}
+
+#evaluate-operators {
+	width: 51px;
+	float: left;
+}
+
+#numblock {
+	float: left;
+	width: 160px;
+}
+
+/** --------------------------------------------------------- 
+* Buttons
+* ----------------------------------------------------------*/
+.btn {
+	float: left;
+	width: 45px;
+	height: 32px;
+	margin: 0 6px 5px 0;
+
+	border: 1px solid #d0cdc4;
+	border-radius: 3px;
+	box-shadow: 
+		inset 0 1px 0 #fff,
+		0 1px 0px #afaba5;
+		
+	-webkit-transition: all 100ms ease-in-out;
+	-moz-transition: all 100ms ease-in-out;
+	-ms-transition: all 100ms ease-in-out;
+	-o-transition: all 100ms ease-in-out;
+	transition: all 100ms ease-in-out;
+}
+
+.btn span {
+	text-align: center;
+	display: block;
+	line-height: 33px;
+	font-size: 18px;
+	color: #6f5d53;
+	text-shadow: 0 1px 0 #fff;
+}
+
+.btn span.hidden {
+	display: none;
+}
+
+#special-operators .btn{
+	background: #E2E1DA;
+}
+
+.btn:hover,
+.btn.active {
+	cursor: pointer;
+	border: 1px solid #BBB9B3;
+	box-shadow: 
+		inset 0 1px 4px #BBB9B3, 
+		1px 0 #fff, 
+		inset 0 -1px 20px #D0CDC4;
+}
+
+#special-oper.btn-operators .btn:hover {
+	cursor: pointer;
+	border: 1px solid #B3B3B3;
+	box-shadow: 
+		inset 0 1px 2px #C9C0BC, 
+		0 1px 0 #fff, 
+		inset 0 -7px 18px #C9C0BC;
+}
+
+#special-operators .btn.disabled span,
+#special-operators .btn.disabled span:hover {
+	color: #BEBEBE;
+}
+
+#special-operators .btn.disabled,
+#special-operators .btn.disabled:hover,
+#special-oper.btn-operators .btn.disabled:hover {
+	cursor: default;
+	background: #E2E1DA;
+	border: 1px solid #d0cdc4;
+	border-radius: 3px;
+	box-shadow: 
+		inset 0 1px 0 #fff,
+		0 1px 0px #afaba5;
+		
+}
+
+/** --------------------------------------------------------- 
+* Special Button Styles
+* ----------------------------------------------------------*/
+.btn.zero {
+	width: 98px;
+}	
+
+.btn.multiply > span {
+	line-height: 43px;
+}	
+
+.btn.clear {
+	background: #de7e3e;
+	border: 1px solid #b0500c;
+	box-shadow: 
+		inset 0 1px 0 #f79758;
+}
+
+.btn.clear {
+	background: #de7e3e;
+	border: 1px solid #b0500c;
+	box-shadow: 
+		inset 0 1px 0 #f79758;
+}
+
+.btn.clear span {
+	color: #b0500c;
+	text-shadow: 0 1px 0 #f79758;
+}
+
+.btn.clear span:hover {
+	box-shadow: inset 0px 1px 1px, inset 0px 0 5px;
+}
+
+.btn.mode span {
+	font-size: 13px;
+	text-transform: uppercase;
+	letter-spacing: -0.1em;
+}
+
+.btn.result {
+	height: 71px;
+}
+
+.btn.exp span{
+	line-height: 25px;
+}
+
+.btn.sqrt span{
+	line-height: 37px;
+}
+
+/** --------------------------------------------------------- 
+* Timer
+* ----------------------------------------------------------*/
+#timer-container {
+	width: 100%;
+	height: 160px;
+	margin: 40px auto;
+	padding: 15px 0;
+	/*box-shadow: 
+		0 -1 0px black,
+		inset 0 1px 0 #D1D8DA, 
+		inset 0 -1px 0 #D1D8DA, 
+		inset 0 0 20px black;*/
+}
+
+#timer-container.close {
+	/*height: 0;
+	padding: 0;
+	overflow: hidden;
+	border-bottom: 1px solid #DBDBDB;
+	border-top: 1px solid #93B1BB;
+	box-shadow:
+		0 4px 40px #3D6572, 
+		0 -1px 8px #F1F1F1, 
+		0 2px 8px #8CACB9;*/
+}
+
+#settings{
+	opacity: 0.5;
+	margin: 30px auto 0;
+	width: 127px;
+	left: 180px;
+	position: relative;
+	
+	-webkit-transition: opacity 300ms ease-in-out;
+	-moz-transition: all 500ms ease-in-out;
+	-ms-transition: all 500ms ease-in-out;
+	-o-transition: all 500ms ease-in-out;
+	transition: all 500ms ease-in-out;	
+}
+
+#settings:hover {
+	opacity: 1;
+	cursor: pointer;
+}
+
+#timer {
+	width: 270px;
+	margin: 0px auto;
+}
+
+#timer > div {
+	opacity: 0.1;
+	
+	-webkit-transition: opacity 500ms ease-in-out;
+	-moz-transition: all 500ms ease-in-out;
+	-ms-transition: all 500ms ease-in-out;
+	-o-transition: all 500ms ease-in-out;
+	transition: all 500ms ease-in-out;	
+}
+
+.second {
+	width: 6px;
+	height: 6px;
+	border-radius: 1px;
+	float: left;
+	margin: 3px 3px 0 0;
+	
+	/*font-family: 'digital';
+	font-size: 16px;
+	width: 22px;
+	text-align: center;
+	height: 16px;
+	float: left;*/
+}
+
+.minutes {
+	width: 12px;
+	height: 12px;
+	border-radius: 2px;
+	float: left;
+	margin: 6px 6px 0 0;
+	
+	/*font-family: 'digital';
+	font-size: 16px;
+	width: 22px;
+	text-align: center;
+	height: 22px;
+	float: left;*/
+}
+
+.timer-label {
+	text-transform: uppercase;
+	color: #fff;
+}
+
+#settings-panel {
+	width: 100%;
+	height: 0px;
+	background: #3C3C3C;
+	margin: 0px auto;
+	padding: 0px 0;
+	
+	box-shadow:
+		inset 0 -1px 0 #D1D8DA, 
+		inset 0 -4px 10px #202020;
+		
+	overflow: hidden;
+	text-align: center;
+
+	-webkit-transition: all 800ms ease-in-out;
+	-moz-transition: all 500ms ease-in-out;
+	-ms-transition: all 500ms ease-in-out;
+	-o-transition: all 500ms ease-in-out;
+	transition: all 500ms ease-in-out;		
+}
+
+#settings-panel a {
+	font-family: 'digital';
+	font-size: 18px;
+	color: #E5E3DC;
+	line-height: 60px;
+	text-align: center;
+	opacity: 0.6;
+	margin: 0 20px;
+}
+
+#settings-panel a:hover {
+	opacity: 1;
+}
+
+
+#settings-dialog {
+	position: absolute;
+	top: 0;
+	margin-top: 100px;
+	width: 600px;
+	z-index: 1000;
+	background: #eee;
+	left: 50%;
+	margin-left: -350px;
+	box-shadow: 0 0 10px #000;
+	border-radius: 8px;
+	
+	color: #333;
+	padding: 30px;
+	text-align: left;
+	
+	text-shadow: 0 1px 0 #fff;
+}	
+
+#settings-dialog h1 {
+	font-size: 24px;
+	line-height: 32px;
+	text-transform: uppercase;
+}
+
+#settings-dialog h2 {
+	font-size: 16px;
+	line-height: 20px;
+	text-transform: uppercase;
+}
+
+#settings-dialog h3 {
+	margin-top: 15px;
+	line-height: 22px;
+}
+
+#settings-dialog ul {
+	padding-left: 20px;
+}
+
+#settings-dialog li {
+	list-style: disc;
+	font-size: 13px;
+	line-height: 18px;
+}
+
+#close-dialog {
+	float: right;
+	cursor: pointer;
+	font-size: 20px;
+	margin: -25px;
+	
+	-webkit-transition: color 300ms ease-in-out;
+	-moz-transition: color 300ms ease-in-out;
+	-ms-transition: color 300ms ease-in-out;
+	-o-transition: color 300ms ease-in-out;
+	transition: color 300ms ease-in-out;		
+}
+
+#close-dialog:hover {
+	color: #ccc;
+}
+
+.time {
+	font-size: 30px;
+	color: #F86808;
+	line-height: 60px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
